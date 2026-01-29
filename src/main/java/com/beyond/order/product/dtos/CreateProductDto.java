@@ -1,6 +1,7 @@
 package com.beyond.order.product.dtos;
 
 import com.beyond.order.product.domain.Product;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +13,12 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateProductDto {
+    @NotBlank
     private String name;
+    @NotBlank
     private Long price;
     private String category;
+    @NotBlank
     private Long stockQuantity;
     private MultipartFile productImage;
 

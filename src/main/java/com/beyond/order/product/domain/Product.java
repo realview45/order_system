@@ -1,9 +1,7 @@
 package com.beyond.order.product.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.beyond.order.member.domain.Member;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,5 +21,8 @@ public class Product {
     private String category;
     private Long stockQuantity;
     private String image_path;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
+    private Member member;
     private LocalDateTime created_time;
 }
