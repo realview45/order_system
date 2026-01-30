@@ -25,6 +25,7 @@ public class Ordering {
     @JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
     private Member member;
     @Builder.Default
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.ordered;
     private LocalDateTime created_time;
 

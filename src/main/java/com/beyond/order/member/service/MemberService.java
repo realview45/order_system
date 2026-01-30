@@ -7,6 +7,7 @@ import com.beyond.order.member.dtos.MemberListDto;
 import com.beyond.order.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
-
+    @Autowired
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
