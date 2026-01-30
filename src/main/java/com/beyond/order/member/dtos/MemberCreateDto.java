@@ -15,7 +15,7 @@ public class MemberCreateDto {
     @NotBlank
     private String password;
 
-    public Member toEntity() {
-        return Member.builder().name(name).email(email).password(password).build();
+    public Member toEntity(String ecodedPassword) {
+        return Member.builder().name(name).email(email).password(ecodedPassword).build();
     }
 }
