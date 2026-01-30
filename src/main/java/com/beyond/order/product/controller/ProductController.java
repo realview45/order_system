@@ -4,8 +4,11 @@ import com.beyond.order.member.dtos.MemberDetailDto;
 import com.beyond.order.product.domain.Product;
 import com.beyond.order.product.dtos.CreateProductDto;
 import com.beyond.order.product.dtos.ProductDetailDto;
+import com.beyond.order.product.dtos.ProductListDto;
 import com.beyond.order.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +36,7 @@ public class ProductController {
     }
     //상품상세조회
     @GetMapping("/list")
-    public List<ProductDetailDto> findAll(){
-        return productService.findAll();
+    public Page<ProductListDto> findAll(Pageable pageable){
+        return productService.findAll(pageable);
     }
 }
