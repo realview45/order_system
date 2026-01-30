@@ -12,13 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/member")
-@Slf4j
 public class MemberController {
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -39,6 +39,7 @@ public class MemberController {
         String token = jwtTokenProvider.createToken(member);
         return token;
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
     public List<MemberListDto> findAll(){
         return memberService.findAll();
