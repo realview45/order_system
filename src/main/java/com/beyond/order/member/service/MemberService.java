@@ -1,14 +1,21 @@
 package com.beyond.order.member.service;
 
 import com.beyond.order.member.domain.Member;
+import com.beyond.order.member.domain.Role;
 import com.beyond.order.member.dtos.MemberCreateDto;
 import com.beyond.order.member.dtos.MemberDetailDto;
 import com.beyond.order.member.dtos.MemberListDto;
 import com.beyond.order.member.dtos.MemberLoginDto;
 import com.beyond.order.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
