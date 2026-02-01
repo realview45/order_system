@@ -29,15 +29,20 @@ public class MemberController {
     //회원가입
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody @Valid MemberCreateDto dto){
-        memberService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("ok");
+        Long id = memberService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
     //유저, 어드민로그인
     @PostMapping("/doLogin")
     public String login(@RequestBody @Valid MemberLoginDto dto){
         Member member = memberService.login(dto);
-        String token = jwtTokenProvider.createToken(member);
-        return token;
+        String accessToken = jwtTokenProvider.createToken(member);
+//        refresh토큰생성
+//        MemberLoginResDto memberLoginResDto = MemberLoginResDto.builder()
+//                .accessToken(accessToken)
+//                .refreshToken(null)
+//                .build();
+        return accessToken;
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")

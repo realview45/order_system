@@ -1,23 +1,18 @@
 package com.beyond.order.member.service;
 
+
+
 import com.beyond.order.member.domain.Member;
-import com.beyond.order.member.domain.Role;
 import com.beyond.order.member.dtos.MemberCreateDto;
 import com.beyond.order.member.dtos.MemberDetailDto;
 import com.beyond.order.member.dtos.MemberListDto;
 import com.beyond.order.member.dtos.MemberLoginDto;
 import com.beyond.order.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +29,12 @@ public class MemberService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void create(MemberCreateDto dto) {
-        memberRepository.save(dto.toEntity(passwordEncoder.encode(dto.getPassword())));
+    public Long create(MemberCreateDto dto) {
+        if(memberRepository.findByEmail(dto.getEmail()).isPresent()){
+            throw new IllegalArgumentException("이메일이 중복입니다.");
+        }
+        Member member = memberRepository.save(dto.toEntity(passwordEncoder.encode(dto.getPassword())));
+        return member.getId();
     }
 
     public List<MemberListDto> findAll() {
@@ -54,7 +53,7 @@ public class MemberService {
             login=false;
         }
         if(!login){
-            throw new EntityNotFoundException("이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
         return member.get();
     }

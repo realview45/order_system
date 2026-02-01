@@ -29,7 +29,7 @@ public class Ordering {
     private OrderStatus orderStatus = OrderStatus.ordered;
     private LocalDateTime created_time;
 
-    @OneToMany(mappedBy = "ordering", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "ordering", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     List<OrderingDetails> orderList = new ArrayList<>();
 }

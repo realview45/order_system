@@ -21,7 +21,7 @@ public class OrderingCreateDto {
     @NotBlank
     private Long productId;
     @NotBlank
-    private int productCount;
+    private Long productCount;
     public static Ordering toEntity() {
         return Ordering.builder()
                 .orderStatus(OrderStatus.ordered)

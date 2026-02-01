@@ -34,7 +34,7 @@ public class ProductController {
     public ProductDetailDto findById(@PathVariable Long id){
         return productService.findById(id);
     }
-    //상품상세조회
+    //상품상세조회(검색)
     @GetMapping("/list")
     public Page<ProductListDto> findAll(Pageable pageable){
         return productService.findAll(pageable);

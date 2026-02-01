@@ -27,7 +27,7 @@ public class ProductDetailDto {
                 .category(p.getCategory())
                 .price(p.getPrice())
                 .stockQuantity(p.getStockQuantity())
-                .image_path(p.getImage_path())
+                .image_path(p.getImagePath())
                 .build();
     }
 }
