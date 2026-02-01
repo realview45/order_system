@@ -9,6 +9,7 @@ import com.beyond.order.member.dtos.MemberListDto;
 import com.beyond.order.member.dtos.MemberLoginDto;
 import com.beyond.order.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -61,6 +63,7 @@ public class MemberService {
 
     public MemberDetailDto findById(Long id) {
         Member member =memberRepository.findById(id).orElseThrow(()->new EntityNotFoundException("엔티티가 없습니다."));
+        System.out.println("dd");
         return MemberDetailDto.fromEntity(member);
     }
 

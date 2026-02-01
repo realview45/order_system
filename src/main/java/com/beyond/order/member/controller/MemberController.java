@@ -43,15 +43,20 @@ public class MemberController {
                 .access_token(accessToken)
                 .refresh_token(null).build();
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
     public List<MemberListDto> findAll(){
         return memberService.findAll();
     }
+
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/myinfo")
     public MemberDetailDto myinfo(){
         return memberService.myinfo();
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/detail/{id}")
     public MemberDetailDto findById(@PathVariable Long id){
         return memberService.findById(id);
