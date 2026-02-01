@@ -1,10 +1,7 @@
 package com.beyond.order.member.domain;
 
 import com.beyond.order.member.dtos.MemberDetailDto;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,7 +15,9 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length=50,unique=true,nullable=false)
     private String email;
+    @Column(nullable=false)
     private String password;
     private String name;
 

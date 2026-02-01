@@ -6,28 +6,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Optional;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductDetailDto {
+public class ProductListDto {
     private Long id;
     private String name;
-    private String category;
     private Long price;
+    private String category;
     private Long stockQuantity;
     private String image_path;
 
-    public static ProductDetailDto fromEntity(Product p) {
-        return ProductDetailDto.builder()
+    public static ProductListDto fromEntity(Product p) {
+        return ProductListDto.builder()
                 .id(p.getId())
                 .name(p.getName())
-                .category(p.getCategory())
                 .price(p.getPrice())
+                .category(p.getCategory())
                 .stockQuantity(p.getStockQuantity())
-                .image_path(p.getImagePath())
-                .build();
+                .image_path(p.getImagePath()).build();
     }
 }

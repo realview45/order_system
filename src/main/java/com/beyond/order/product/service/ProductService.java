@@ -2,8 +2,11 @@ package com.beyond.order.product.service;
 import com.beyond.order.product.domain.Product;
 import com.beyond.order.product.dtos.CreateProductDto;
 import com.beyond.order.product.dtos.ProductDetailDto;
+import com.beyond.order.product.dtos.ProductListDto;
 import com.beyond.order.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +32,8 @@ public class ProductService {
         return ProductDetailDto.fromEntity(product);
     }
 
-    public List<ProductDetailDto> findAll() {
-        return productRepository.findAll().stream().map(p->ProductDetailDto.fromEntity(p)).collect(Collectors.toList());
+    public Page<ProductListDto> findAll(Pageable pageable) {
+        Page<Product> productList = productRepository.findAll(pageable);
+        return productList.map(p-> ProductListDto.fromEntity(p));
     }
 }

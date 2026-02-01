@@ -19,7 +19,7 @@ public class OrderingDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int quantity;
+    private Long quantity;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ordering_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
     private Ordering ordering;
