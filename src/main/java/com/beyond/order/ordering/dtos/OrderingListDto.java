@@ -1,6 +1,5 @@
 package com.beyond.order.ordering.dtos;
 import com.beyond.order.ordering.domain.OrderStatus;
-import com.beyond.order.ordering.orderingDetails.dtos.OrderingDetailsListDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

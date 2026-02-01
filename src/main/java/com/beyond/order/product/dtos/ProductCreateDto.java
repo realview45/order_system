@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateProductDto {
+public class ProductCreateDto {
     @NotBlank
     private String name;
     @NotBlank

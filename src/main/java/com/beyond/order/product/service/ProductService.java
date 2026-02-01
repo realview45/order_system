@@ -2,7 +2,7 @@ package com.beyond.order.product.service;
 import com.beyond.order.member.domain.Member;
 import com.beyond.order.member.repository.MemberRepository;
 import com.beyond.order.product.domain.Product;
-import com.beyond.order.product.dtos.CreateProductDto;
+import com.beyond.order.product.dtos.ProductCreateDto;
 import com.beyond.order.product.dtos.ProductDetailDto;
 import com.beyond.order.product.dtos.ProductListDto;
 import com.beyond.order.product.dtos.ProductSearchDto;
@@ -16,18 +16,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -38,7 +31,7 @@ public class ProductService {
         this.productRepository = productRepository;
         this.memberRepository = memberRepository;
     }
-    public Long create( CreateProductDto dto) {
+    public Long create( ProductCreateDto dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         Member member = memberRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("엔티티가 없습니다."));
         Product product = productRepository.save(dto.toEntity(member));

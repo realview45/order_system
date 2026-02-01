@@ -3,7 +3,6 @@ package com.beyond.order.ordering.domain;
 
 import com.beyond.order.common.domain.BaseTimeEntity;
 import com.beyond.order.member.domain.Member;
-import com.beyond.order.ordering.orderingDetails.domain.OrderingDetails;
 import jakarta.persistence.*;
 import lombok.*;
 

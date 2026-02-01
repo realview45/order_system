@@ -1,12 +1,9 @@
-package com.beyond.order.ordering.orderingDetails.domain;
+package com.beyond.order.ordering.domain;
 
 import com.beyond.order.common.domain.BaseTimeEntity;
-import com.beyond.order.ordering.domain.Ordering;
 import com.beyond.order.product.domain.Product;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 import static java.time.LocalDateTime.now;
 

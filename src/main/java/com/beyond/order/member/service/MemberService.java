@@ -40,6 +40,7 @@ public class MemberService {
         return member.getId();
     }
 
+    @Transactional(readOnly = true)
     public List<MemberListDto> findAll() {
         return memberRepository.findAll().stream().map(m->MemberListDto.fromEntity(m)).collect(Collectors.toList());
     }
@@ -61,14 +62,15 @@ public class MemberService {
         return member.get();
     }
 
+    @Transactional(readOnly = true)
     public MemberDetailDto findById(Long id) {
         Member member =memberRepository.findById(id).orElseThrow(()->new EntityNotFoundException("엔티티가 없습니다."));
-        System.out.println("dd");
         return MemberDetailDto.fromEntity(member);
     }
 
-    public MemberDetailDto myinfo() {
-        Member member = memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()).orElseThrow(()-> new EntityNotFoundException("엔티티가없습니다."));
+    @Transactional(readOnly = true)
+    public MemberDetailDto myinfo(String principal) {
+        Member member = memberRepository.findByEmail(principal).orElseThrow(()-> new EntityNotFoundException("엔티티가없습니다."));
         return MemberDetailDto.fromEntity(member);
     }
 

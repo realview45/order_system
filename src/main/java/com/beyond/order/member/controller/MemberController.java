@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,11 +35,6 @@ public class MemberController {
     public TokenDto login(@RequestBody @Valid MemberLoginDto dto){
         Member member = memberService.login(dto);
         String accessToken = jwtTokenProvider.createToken(member);
-//        refresh토큰생성
-//        MemberLoginResDto memberLoginResDto = MemberLoginResDto.builder()
-//                .accessToken(accessToken)
-//                .refreshToken(null)
-//                .build();
         return TokenDto.builder()
                 .access_token(accessToken)
                 .refresh_token(null).build();
@@ -52,8 +48,8 @@ public class MemberController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/myinfo")
-    public MemberDetailDto myinfo(){
-        return memberService.myinfo();
+    public MemberDetailDto myinfo(@AuthenticationPrincipal String principal){
+        return memberService.myinfo(principal);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

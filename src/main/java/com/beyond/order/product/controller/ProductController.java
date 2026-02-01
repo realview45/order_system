@@ -1,8 +1,6 @@
 package com.beyond.order.product.controller;
 
-import com.beyond.order.member.dtos.MemberDetailDto;
-import com.beyond.order.product.domain.Product;
-import com.beyond.order.product.dtos.CreateProductDto;
+import com.beyond.order.product.dtos.ProductCreateDto;
 import com.beyond.order.product.dtos.ProductDetailDto;
 import com.beyond.order.product.dtos.ProductListDto;
 import com.beyond.order.product.dtos.ProductSearchDto;
@@ -17,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -30,7 +26,7 @@ public class ProductController {
     //상품등록
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
-    public ResponseEntity<?> create(@ModelAttribute CreateProductDto dto){
+    public ResponseEntity<?> create(@ModelAttribute ProductCreateDto dto){
         Long id = productService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
