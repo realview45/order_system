@@ -1,10 +1,13 @@
 package com.beyond.order.member.domain;
 
 import com.beyond.order.member.dtos.MemberDetailDto;
+import com.beyond.order.ordering.domain.Ordering;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter @AllArgsConstructor
 @NoArgsConstructor
@@ -24,5 +27,9 @@ public class Member {
     @Builder.Default
     private Role role=Role.USER;
     private LocalDateTime created_time;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<Ordering> orderingList = new ArrayList<>();
 
 }

@@ -1,5 +1,6 @@
 package com.beyond.order.ordering.dtos;
 
+import com.beyond.order.member.domain.Member;
 import com.beyond.order.ordering.domain.OrderStatus;
 import com.beyond.order.ordering.domain.Ordering;
 import com.beyond.order.orderingDetails.domain.OrderingDetails;
@@ -22,10 +23,11 @@ public class OrderingCreateDto {
     private Long productId;
     @NotBlank
     private Long productCount;
-    public static Ordering toEntity() {
+    public static Ordering toEntity(Member member) {
         return Ordering.builder()
                 .orderStatus(OrderStatus.ordered)
                 .created_time(now())
+                .member(member)
                 .build();
     }
 }
