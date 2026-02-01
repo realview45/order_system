@@ -2,10 +2,7 @@ package com.beyond.order.member.controller;
 
 import com.beyond.order.common.auth.JwtTokenProvider;
 import com.beyond.order.member.domain.Member;
-import com.beyond.order.member.dtos.MemberCreateDto;
-import com.beyond.order.member.dtos.MemberDetailDto;
-import com.beyond.order.member.dtos.MemberListDto;
-import com.beyond.order.member.dtos.MemberLoginDto;
+import com.beyond.order.member.dtos.*;
 import com.beyond.order.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +31,7 @@ public class MemberController {
     }
     //유저, 어드민로그인
     @PostMapping("/doLogin")
-    public String login(@RequestBody @Valid MemberLoginDto dto){
+    public TokenDto login(@RequestBody @Valid MemberLoginDto dto){
         Member member = memberService.login(dto);
         String accessToken = jwtTokenProvider.createToken(member);
 //        refresh토큰생성
@@ -42,7 +39,9 @@ public class MemberController {
 //                .accessToken(accessToken)
 //                .refreshToken(null)
 //                .build();
-        return accessToken;
+        return TokenDto.builder()
+                .access_token(accessToken)
+                .refresh_token(null).build();
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
