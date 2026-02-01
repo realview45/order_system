@@ -30,4 +30,8 @@ public class Product extends BaseTimeEntity {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT), nullable = false)
     private Member member;
+
+    public void updateProfileImageUrl(String imgUrl) {
+        imagePath = imgUrl;
+    }
 }
