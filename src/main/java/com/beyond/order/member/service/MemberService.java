@@ -9,7 +9,9 @@ import com.beyond.order.member.dtos.MemberListDto;
 import com.beyond.order.member.dtos.MemberLoginDto;
 import com.beyond.order.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -37,6 +40,7 @@ public class MemberService {
         return member.getId();
     }
 
+    @Transactional(readOnly = true)
     public List<MemberListDto> findAll() {
         return memberRepository.findAll().stream().map(m->MemberListDto.fromEntity(m)).collect(Collectors.toList());
     }
@@ -58,14 +62,16 @@ public class MemberService {
         return member.get();
     }
 
+    @Transactional(readOnly = true)
     public MemberDetailDto findById(Long id) {
         Member member =memberRepository.findById(id).orElseThrow(()->new EntityNotFoundException("엔티티가 없습니다."));
         return MemberDetailDto.fromEntity(member);
     }
 
-
-//    public MemberDetailDto myinfo() {
-//        return
-//    }
+    @Transactional(readOnly = true)
+    public MemberDetailDto myinfo(String principal) {
+        Member member = memberRepository.findByEmail(principal).orElseThrow(()-> new EntityNotFoundException("엔티티가없습니다."));
+        return MemberDetailDto.fromEntity(member);
+    }
 
 }

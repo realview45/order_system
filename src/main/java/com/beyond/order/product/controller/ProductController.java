@@ -1,19 +1,19 @@
 package com.beyond.order.product.controller;
 
-import com.beyond.order.member.dtos.MemberDetailDto;
-import com.beyond.order.product.domain.Product;
-import com.beyond.order.product.dtos.CreateProductDto;
+import com.beyond.order.product.dtos.ProductCreateDto;
 import com.beyond.order.product.dtos.ProductDetailDto;
 import com.beyond.order.product.dtos.ProductListDto;
+import com.beyond.order.product.dtos.ProductSearchDto;
 import com.beyond.order.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/product")
@@ -24,19 +24,25 @@ public class ProductController {
         this.productService = productService;
     }
     //상품등록
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
-    public ResponseEntity<?> create(@ModelAttribute CreateProductDto dto){
-        productService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("ok");
+    public ResponseEntity<?> create(@ModelAttribute ProductCreateDto dto){
+        Long id = productService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
+
     //상품상세조회
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/detail/{id}")
     public ProductDetailDto findById(@PathVariable Long id){
         return productService.findById(id);
     }
-    //상품상세조회(검색)
+    //상품목록조회(검색)
     @GetMapping("/list")
-    public Page<ProductListDto> findAll(Pageable pageable){
-        return productService.findAll(pageable);
+    public Page<ProductListDto> findAll(
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)Pageable pageable,
+            @ModelAttribute ProductSearchDto searchDto){
+        System.out.println(searchDto.toString());
+        return productService.findAll(pageable, searchDto);
     }
 }
