@@ -49,7 +49,7 @@ public class OrderingService {
                             .product(productRepository.findById(dto.getProductId()).orElseThrow(()->new EntityNotFoundException("엔티티를 찾을 수 없습니다.")))
                             .quantity(dto.getProductCount())
                             .ordering(ordering).build();
-            orderList.add(od);
+            orderList.add(od);//cascade persist
         }
         orderingRepository.save(ordering);
         return ordering.getId();
@@ -59,32 +59,30 @@ public class OrderingService {
         List<Ordering> orderingList = orderingRepository.findAll();
         List<OrderingListDto> dtoList = new ArrayList<>();
         for(Ordering o : orderingList){
-            List<OrderingDetails> detailsList = o.getOrderList();
-            List<OrderingDetailsListDto> detailsListDtoList = detailsList.stream().map(d-> OrderingDetailsListDto.fromEntity(d)).collect(Collectors.toList());
-            OrderingListDto orderingListDto = OrderingListDto.builder()
-                    .id(o.getId())
-                    .memberEmail(o.getMember().getEmail())
-                    .orderStatus(o.getOrderStatus())
-                    .orderingDetailsListDtoList(detailsListDtoList).build();
+            OrderingListDto orderingListDto = OrderingListDto.fromEntity(o);
             dtoList.add(orderingListDto);
         }
         return dtoList;
+        //return orderingRepository.findAll().stream().map(o-> OrderingListDto.fromEntity(o)).collect(Collectors.toList());
     }
-    public List<OrderingListDto> myorders() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        Member member = memberRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("엔티티가 없습니다."));
-        List<Ordering> orderingList = member.getOrderingList();
-        List<OrderingListDto> dtoList = new ArrayList<>();
-        for(Ordering o : orderingList){
-            List<OrderingDetails> detailsList = o.getOrderList();
-            List<OrderingDetailsListDto> detailsListDtoList = detailsList.stream().map(d-> OrderingDetailsListDto.fromEntity(d)).collect(Collectors.toList());
-            OrderingListDto orderingListDto = OrderingListDto.builder()
-                    .id(o.getId())
-                    .memberEmail(o.getMember().getEmail())
-                    .orderStatus(o.getOrderStatus())
-                    .orderingDetailsListDtoList(detailsListDtoList).build();
-            dtoList.add(orderingListDto);
-        }
-        return dtoList;
+    public List<OrderingListDto> myorders(String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(()-> new EntityNotFoundException("엔티티가 없습니다."));
+        return orderingRepository.findAllByMember(member).stream().map(o-> OrderingListDto.fromEntity(o)).collect(Collectors.toList());
+
+//        String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+//        Member member = memberRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("엔티티가 없습니다."));
+//        List<Ordering> orderingList = member.getOrderingList();
+//        List<OrderingListDto> dtoList = new ArrayList<>();
+//        for(Ordering o : orderingList){
+//            List<OrderingDetails> detailsList = o.getOrderList();
+//            List<OrderingDetailsListDto> detailsListDtoList = detailsList.stream().map(d-> OrderingDetailsListDto.fromEntity(d)).collect(Collectors.toList());
+//            OrderingListDto orderingListDto = OrderingListDto.builder()
+//                    .id(o.getId())
+//                    .memberEmail(o.getMember().getEmail())
+//                    .orderStatus(o.getOrderStatus())
+//                    .orderingDetailsListDtoList(detailsListDtoList).build();
+//            dtoList.add(orderingListDto);
+//        }
+//        return dtoList;
     }
 }

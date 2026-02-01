@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +23,8 @@ public class OrderingController {
     }
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody List<OrderingCreateDto> dto){
-        Long id = orderingService.create(dto);
+    public ResponseEntity<?> create(@RequestBody List<OrderingCreateDto> dtoList){
+        Long id = orderingService.create(dtoList);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
     @PreAuthorize("hasRole('ADMIN')")
@@ -34,8 +35,8 @@ public class OrderingController {
     }
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/myorders")
-    public ResponseEntity<?> myorders(){
-        List<OrderingListDto> dtoList = orderingService.myorders();
+    public ResponseEntity<?> myorders(@AuthenticationPrincipal String email){
+        List<OrderingListDto> dtoList = orderingService.myorders(email);
         return ResponseEntity.status(HttpStatus.CREATED).body(dtoList);
     }
 }

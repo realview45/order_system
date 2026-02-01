@@ -71,7 +71,7 @@ public class ProductService {
         return product.getId();
     }
     public ProductDetailDto findById(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("엔티티가 없습니다."));
+        Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("상품정보없음."));
         return ProductDetailDto.fromEntity(product);
     }
 
@@ -81,7 +81,7 @@ public class ProductService {
             public Predicate toPredicate(Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicateList = new ArrayList<>();
                 if (searchDto.getProductName() != null) {
-                    predicateList.add(criteriaBuilder.equal(root.get("name"), searchDto.getProductName()));
+                    predicateList.add(criteriaBuilder.like(root.get("name"), "%"+searchDto.getProductName()+"%"));
                 }
                 if (searchDto.getCategory() != null) {
                     predicateList.add(criteriaBuilder.equal(root.get("category"), searchDto.getCategory()));
