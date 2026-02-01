@@ -1,6 +1,6 @@
-package com.beyond.order.orderingDetails.repository;
+package com.beyond.order.ordering.orderingDetails.repository;
 
-import com.beyond.order.orderingDetails.domain.OrderingDetails;
+import com.beyond.order.ordering.orderingDetails.domain.OrderingDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,5 +1,6 @@
 package com.beyond.order.product.domain;
 
+import com.beyond.order.common.domain.BaseTimeEntity;
 import com.beyond.order.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,7 +15,7 @@ import static java.time.LocalDateTime.now;
 @ToString
 @Builder
 @Entity
-public class Product {
+public class Product extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,6 +30,4 @@ public class Product {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT), nullable = false)
     private Member member;
-    @Builder.Default
-    private LocalDateTime created_time=now();
 }

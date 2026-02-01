@@ -1,5 +1,6 @@
-package com.beyond.order.orderingDetails.domain;
+package com.beyond.order.ordering.orderingDetails.domain;
 
+import com.beyond.order.common.domain.BaseTimeEntity;
 import com.beyond.order.ordering.domain.Ordering;
 import com.beyond.order.product.domain.Product;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import static java.time.LocalDateTime.now;
 @ToString
 @Builder
 @Entity
-public class OrderingDetails {
+public class OrderingDetails extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,6 +26,4 @@ public class OrderingDetails {
     private Ordering ordering;
     @ManyToOne
     private Product product;
-    @Builder.Default
-    private LocalDateTime created_time=now();
 }

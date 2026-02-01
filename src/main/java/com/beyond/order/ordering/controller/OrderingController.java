@@ -32,4 +32,10 @@ public class OrderingController {
         List<OrderingListDto> dtoList = orderingService.findAll();
         return ResponseEntity.status(HttpStatus.CREATED).body(dtoList);
     }
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/myorders")
+    public ResponseEntity<?> myorders(){
+        List<OrderingListDto> dtoList = orderingService.myorders();
+        return ResponseEntity.status(HttpStatus.CREATED).body(dtoList);
+    }
 }

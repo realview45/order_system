@@ -1,21 +1,17 @@
 package com.beyond.order.ordering.service;
 
 import com.beyond.order.member.domain.Member;
-import com.beyond.order.member.dtos.MemberCreateDto;
 import com.beyond.order.member.repository.MemberRepository;
 import com.beyond.order.ordering.domain.Ordering;
-import com.beyond.order.ordering.dtos.Order;
 import com.beyond.order.ordering.dtos.OrderingCreateDto;
 import com.beyond.order.ordering.dtos.OrderingListDto;
 import com.beyond.order.ordering.repository.OrderingRepository;
-import com.beyond.order.orderingDetails.domain.OrderingDetails;
-import com.beyond.order.orderingDetails.dtos.OrderingDetailsListDto;
-import com.beyond.order.orderingDetails.repository.OrderingDetailsRepository;
-import com.beyond.order.product.domain.Product;
+import com.beyond.order.ordering.orderingDetails.domain.OrderingDetails;
+import com.beyond.order.ordering.orderingDetails.dtos.OrderingDetailsListDto;
+import com.beyond.order.ordering.orderingDetails.repository.OrderingDetailsRepository;
 import com.beyond.order.product.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -74,6 +70,21 @@ public class OrderingService {
         }
         return dtoList;
     }
-
-
+    public List<OrderingListDto> myorders() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        Member member = memberRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("엔티티가 없습니다."));
+        List<Ordering> orderingList = member.getOrderingList();
+        List<OrderingListDto> dtoList = new ArrayList<>();
+        for(Ordering o : orderingList){
+            List<OrderingDetails> detailsList = o.getOrderList();
+            List<OrderingDetailsListDto> detailsListDtoList = detailsList.stream().map(d-> OrderingDetailsListDto.fromEntity(d)).collect(Collectors.toList());
+            OrderingListDto orderingListDto = OrderingListDto.builder()
+                    .id(o.getId())
+                    .memberEmail(o.getMember().getEmail())
+                    .orderStatus(o.getOrderStatus())
+                    .orderingDetailsListDtoList(detailsListDtoList).build();
+            dtoList.add(orderingListDto);
+        }
+        return dtoList;
+    }
 }
