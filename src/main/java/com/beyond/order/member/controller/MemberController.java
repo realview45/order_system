@@ -49,10 +49,10 @@ public class MemberController {
     public List<MemberListDto> findAll(){
         return memberService.findAll();
     }
-//    @GetMapping("/myinfo")
-//    public MemberDetailDto myinfo(){
-//        return memberService.myinfo();
-//    }
+    @GetMapping("/myinfo")
+    public MemberDetailDto myinfo(){
+        return memberService.myinfo();
+    }
     @GetMapping("/detail/{id}")
     public MemberDetailDto findById(@PathVariable Long id){
         return memberService.findById(id);

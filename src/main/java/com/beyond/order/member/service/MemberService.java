@@ -10,6 +10,7 @@ import com.beyond.order.member.dtos.MemberLoginDto;
 import com.beyond.order.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,9 +64,9 @@ public class MemberService {
         return MemberDetailDto.fromEntity(member);
     }
 
-
-//    public MemberDetailDto myinfo() {
-//        return
-//    }
+    public MemberDetailDto myinfo() {
+        Member member = memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()).orElseThrow(()-> new EntityNotFoundException("엔티티가없습니다."));
+        return MemberDetailDto.fromEntity(member);
+    }
 
 }
