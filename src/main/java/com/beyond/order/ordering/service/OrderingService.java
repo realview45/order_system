@@ -9,6 +9,7 @@ import com.beyond.order.ordering.repository.OrderingDetailsRepository;
 import com.beyond.order.ordering.repository.OrderingRepository;
 import com.beyond.order.ordering.domain.OrderingDetails;
 import com.beyond.order.ordering.dtos.OrderingDetailsListDto;
+import com.beyond.order.product.domain.Product;
 import com.beyond.order.product.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -42,8 +43,13 @@ public class OrderingService {
         Ordering ordering = OrderingCreateDto.toEntity(member);
         List<OrderingDetails> orderList = ordering.getOrderList();
         for (OrderingCreateDto dto : dtoList) {
+            Product product = productRepository.findById(dto.getProductId()).orElseThrow(()->new EntityNotFoundException("엔티티가없습니다."));
+            if(product.getStockQuantity()<dto.getProductCount()){//요청전부다 취소될것임구리
+                throw new IllegalArgumentException("재고가 없습니다.");
+            }
             System.out.println("상품ID: " + dto.getProductId());
             System.out.println("수량: " + dto.getProductCount());
+            product.updateStockQuantity(dto.getProductCount());
             OrderingDetails od =
                     OrderingDetails.builder()
                             .product(productRepository.findById(dto.getProductId()).orElseThrow(()->new EntityNotFoundException("엔티티를 찾을 수 없습니다.")))
