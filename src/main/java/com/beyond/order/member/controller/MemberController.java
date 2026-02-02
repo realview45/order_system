@@ -35,6 +35,19 @@ public class MemberController {
     public TokenDto login(@RequestBody @Valid MemberLoginDto dto){
         Member member = memberService.login(dto);
         String accessToken = jwtTokenProvider.createToken(member);
+//        refresh생성및저장
+        String refreshToken = jwtTokenProvider.createRtToken(member);
+        return TokenDto.builder()
+                .refresh_token(refreshToken)
+                .access_token(accessToken)
+                .build();
+    }
+    @PostMapping("/refresh-at")
+    public TokenDto refreshAt(@RequestBody RefreshTokenDto dto){
+        //rt검증(1.토큰 자체검증(유효기간확인) 2.redis조회 검증)
+        Member member = jwtTokenProvider.validateRt(dto.getRefreshToken());
+//        at신규생성 후 return
+        String accessToken = jwtTokenProvider.createToken(member);
         return TokenDto.builder()
                 .access_token(accessToken)
                 .refresh_token(null).build();

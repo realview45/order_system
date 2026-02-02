@@ -38,11 +38,11 @@ public class ProductController {
         return productService.findById(id);
     }
     //상품목록조회(검색)
+    //@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
     @GetMapping("/list")
     public Page<ProductListDto> findAll(
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)Pageable pageable,
+            Pageable pageable,
             @ModelAttribute ProductSearchDto searchDto){
-        System.out.println(searchDto.toString());
         return productService.findAll(pageable, searchDto);
     }
 }
