@@ -1,10 +1,12 @@
 package com.beyond.order.common.auth;
 
 import com.beyond.order.member.domain.Member;
+import com.beyond.order.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +17,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtTokenProvider {
@@ -28,9 +31,11 @@ public class JwtTokenProvider {
     private int expiration_rt;
     private Key secret_key_rt;
     private Key secret_key;
+    private final MemberRepository memberRepository;
     private final RedisTemplate<String,String> redisTemplate;
     @Autowired              //Bean에 이름붙여주기
-    public JwtTokenProvider(@Qualifier("rtInventory") RedisTemplate<String, String> redisTemplate) {
+    public JwtTokenProvider(MemberRepository memberRepository, @Qualifier("rtInventory") RedisTemplate<String, String> redisTemplate) {
+        this.memberRepository = memberRepository;
         this.redisTemplate = redisTemplate;
     }
 
@@ -76,7 +81,32 @@ public class JwtTokenProvider {
                 .compact();
 //        rt토큰을 redis에 저장
 //        opsForValue : 일반 스트링 자료구조 opsForSet(또는 Zset 또는 List등) 존재
-        redisTemplate.opsForValue().set(member.getEmail(), token);
+//        redisTemplate.opsForValue().set(member.getEmail(), token);
+        redisTemplate.opsForValue().set(member.getEmail(), token, expiration_rt, TimeUnit.MINUTES);//3000분 ttl
         return token;
+    }
+
+    public Member validateRt(String refreshToken) {
+        //유효기간 만료, 토큰조작시 검증에러날시 에러터뜨림
+        Claims claims = null;
+        try {
+            claims = Jwts.parserBuilder()
+                    //1.키값넣으면
+                    .setSigningKey(st_secret_key_rt)
+                    .build()
+                    //2.파싱을해서 재암호화해서 비교해서 검증후
+                    .parseClaimsJws(refreshToken).getBody();
+        }catch(Exception e){//CommonException으로 간다.
+            throw new IllegalArgumentException("잘못된 토큰입니다.");
+        }
+        String email = claims.getSubject();
+        Member member = memberRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("엔티티가 없습니다."));
+//        redis rt와 비교 검증(삭제하려고)
+        String redisRt = redisTemplate.opsForValue().get(email);
+        if(!redisRt.equals(refreshToken)){
+            throw new IllegalArgumentException("잘못된 토큰입니다.");
+        }
+
+        return member;
     }
 }

@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .exceptionHandling(e->e.authenticationEntryPoint(jwtAuthenticationHandler))
 //                지정한 특정url을 제외한 모든 요청에 대해서 authenticated(인증처리)하겠다라는 의미
                 .authorizeHttpRequests(a->a.requestMatchers(
-                        "/member/doLogin", "/member/create", "/product/list").permitAll().anyRequest().authenticated())
+                        "/member/doLogin", "/member/create", "/product/list", "/member/refresh-at").permitAll().anyRequest().authenticated())
                 .build();
     }
     @Bean
