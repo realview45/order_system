@@ -35,6 +35,8 @@ public class MemberController {
     public TokenDto login(@RequestBody @Valid MemberLoginDto dto){
         Member member = memberService.login(dto);
         String accessToken = jwtTokenProvider.createToken(member);
+//        refresh생성및저장
+        String refreshToken = jwtTokenProvider.createRtToken(member);
         return TokenDto.builder()
                 .access_token(accessToken)
                 .refresh_token(null).build();
