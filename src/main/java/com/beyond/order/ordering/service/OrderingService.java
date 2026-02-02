@@ -1,5 +1,6 @@
 package com.beyond.order.ordering.service;
 
+import com.beyond.order.common.service.SseAlarmService;
 import com.beyond.order.member.domain.Member;
 import com.beyond.order.member.repository.MemberRepository;
 import com.beyond.order.ordering.domain.Ordering;
@@ -28,12 +29,14 @@ public class OrderingService {
     private final OrderingDetailsRepository orderingDetailsRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
+    private final SseAlarmService sseAlarmService;
     @Autowired
-    public OrderingService(OrderingRepository orderingRepository, OrderingDetailsRepository orderingDetailsRepository, ProductRepository productRepository, MemberRepository memberRepository) {
+    public OrderingService(OrderingRepository orderingRepository, OrderingDetailsRepository orderingDetailsRepository, ProductRepository productRepository, MemberRepository memberRepository, SseAlarmService sseAlarmService) {
         this.orderingRepository = orderingRepository;
         this.orderingDetailsRepository = orderingDetailsRepository;
         this.productRepository = productRepository;
         this.memberRepository = memberRepository;
+        this.sseAlarmService = sseAlarmService;
     }
 
     public Long create(List<OrderingCreateDto> dtoList) {
@@ -58,6 +61,9 @@ public class OrderingService {
             orderList.add(od);//cascade persist
         }
         orderingRepository.save(ordering);
+//        주문성공시 admin 유저에게 알림메시지 전송
+        String message = ordering.getId()+ "번 주문이 발생했습니다.";
+        sseAlarmService.sendMessage("admin@naver.com",email, message);
         return ordering.getId();
     }
 
