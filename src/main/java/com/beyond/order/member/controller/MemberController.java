@@ -4,6 +4,7 @@ import com.beyond.order.common.auth.JwtTokenProvider;
 import com.beyond.order.member.domain.Member;
 import com.beyond.order.member.dtos.*;
 import com.beyond.order.member.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,9 @@ public class MemberController {
     }
     //회원가입
     @PostMapping("/create")
+    @Operation(
+            summary = "회원가입", description = "이메일, 비밀번호를 통한 회원가입"
+    )
     public ResponseEntity<?> create(@RequestBody @Valid MemberCreateDto dto){
         Long id = memberService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
