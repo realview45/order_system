@@ -20,4 +20,9 @@ public class SseEmitterRegistry {
     public SseEmitter getEmitter(String email){
         return this.emitterMap.get(email);
     }
+
+    public void removeEmitter(String email){
+        System.out.println(email);
+        this.emitterMap.remove(email);
+    }
 }
