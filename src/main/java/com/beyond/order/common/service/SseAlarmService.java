@@ -35,9 +35,16 @@ public class SseAlarmService implements MessageListener {
         try {
             String data = objectMapper.writeValueAsString(dto);
                                         //메시지의 타이틀     본문
-//            sseEmitter.send(SseEmitter.event().name("ordered").data(data));
-//            redis pubsub기능을 활용하여 메시지 publish
-            redisTemplate.convertAndSend("order-channel", data);
+            //사용자정보가 없을때만 pubsub을 이용하고 아니라면 바로 알림구리
+//            만약에 emitter객체가 현재서버에 있으면, 바로 알림발송, 그렇지 않으면, redis pub/sub활용.
+            if(sseEmitter !=null){
+                sseEmitter.send(SseEmitter.event().name("ordered").data(data));
+//                사용자가 새로고침후에 알림메시지를 조회하려면 DB에 추가적으로 저장 필요.
+            }else {
+                redisTemplate.convertAndSend("order-channel",data);
+            }
+////            redis pubsub기능을 활용하여 메시지 publish
+//            redisTemplate.convertAndSend("order-channel", data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -45,11 +52,19 @@ public class SseAlarmService implements MessageListener {
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
+//        message : 실질적으로 메시지가 담겨있는 객체
+//        pattern : 채널명
+//        추후 여러개의 채널에 각기 메시지를 publish하고 subscribe할 경우, 채널명으로 분기처리 가능
         String channelName = new String(pattern);
         System.out.println("channelName : " + channelName);
         try {
             SseMessageDto dto = objectMapper.readValue(message.getBody(), SseMessageDto.class);
-            System.out.println("message : " + dto);
+            String data = objectMapper.writeValueAsString(dto);
+            SseEmitter sseEmitter = sseEmitterRegistry.getEmitter(dto.getReceiver());
+//            해당서버에 receiver의 emitter객체가 있으면 send
+            if(sseEmitter!=null){
+                sseEmitter.send(SseEmitter.event().name("ordered").data(data));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
