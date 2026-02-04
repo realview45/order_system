@@ -1,9 +1,6 @@
 package com.beyond.order.product.controller;
 
-import com.beyond.order.product.dtos.ProductCreateDto;
-import com.beyond.order.product.dtos.ProductDetailDto;
-import com.beyond.order.product.dtos.ProductListDto;
-import com.beyond.order.product.dtos.ProductSearchDto;
+import com.beyond.order.product.dtos.*;
 import com.beyond.order.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -44,5 +41,10 @@ public class ProductController {
             Pageable pageable,
             @ModelAttribute ProductSearchDto searchDto){
         return productService.findAll(pageable, searchDto);
+    }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @ModelAttribute ProductUpdateDto dto){
+        productService.update(id, dto);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

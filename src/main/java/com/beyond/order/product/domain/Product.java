@@ -2,6 +2,8 @@ package com.beyond.order.product.domain;
 
 import com.beyond.order.common.domain.BaseTimeEntity;
 import com.beyond.order.member.domain.Member;
+import com.beyond.order.product.dtos.ProductDetailDto;
+import com.beyond.order.product.dtos.ProductUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,5 +38,12 @@ public class Product extends BaseTimeEntity {
     }
     public void updateStockQuantity(int orderQuantity) {
         this.stockQuantity = this.stockQuantity-orderQuantity;
+    }
+
+    public void updateProduct(ProductUpdateDto dto) {
+        this.name=dto.getName();
+        this.category=dto.getCategory();
+        this.price=dto.getPrice();
+        this.stockQuantity = dto.getStockQuantity();
     }
 }
