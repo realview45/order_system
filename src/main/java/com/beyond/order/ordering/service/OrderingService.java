@@ -13,10 +13,11 @@ import com.beyond.order.ordering.dtos.OrderingDetailsListDto;
 import com.beyond.order.product.domain.Product;
 import com.beyond.order.product.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ public class OrderingService {
         this.sseAlarmService = sseAlarmService;
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public Long create(List<OrderingCreateDto> dtoList) {
         //email을 인증객체에서 꺼내서 오더링 빌더로 만들고, 저장,
         String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
