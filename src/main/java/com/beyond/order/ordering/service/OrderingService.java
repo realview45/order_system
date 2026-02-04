@@ -40,7 +40,7 @@ public class OrderingService {
         this.sseAlarmService = sseAlarmService;
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+//    @Transactional(isolation = Isolation.SERIALIZABLE)
     public Long create(List<OrderingCreateDto> dtoList) {
         //email을 인증객체에서 꺼내서 오더링 빌더로 만들고, 저장,
         String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
@@ -48,7 +48,8 @@ public class OrderingService {
         Ordering ordering = OrderingCreateDto.toEntity(member);
         List<OrderingDetails> orderList = ordering.getOrderList();
         for (OrderingCreateDto dto : dtoList) {
-            Product product = productRepository.findById(dto.getProductId()).orElseThrow(()->new EntityNotFoundException("엔티티가없습니다."));
+//            동시성제어방법2. select for update를 통한 락설정이후 조회 그럼에도 성능저하 에러날수있다.
+            Product product = productRepository.findByIdForUpdate(dto.getProductId()).orElseThrow(()->new EntityNotFoundException("엔티티가없습니다."));
             if(product.getStockQuantity()<dto.getProductCount()){//요청전부다 취소될것임구리
                 throw new IllegalArgumentException("재고가 없습니다.");
             }
@@ -57,7 +58,7 @@ public class OrderingService {
             product.updateStockQuantity(dto.getProductCount());
             OrderingDetails od =
                     OrderingDetails.builder()
-                            .product(productRepository.findById(dto.getProductId()).orElseThrow(()->new EntityNotFoundException("엔티티를 찾을 수 없습니다.")))
+                            .product(product)
                             .quantity(dto.getProductCount())
                             .ordering(ordering).build();
             orderList.add(od);//cascade persist
