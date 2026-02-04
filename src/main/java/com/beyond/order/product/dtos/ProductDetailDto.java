@@ -17,7 +17,7 @@ public class ProductDetailDto {
     private String name;
     private String category;
     private Long price;
-    private Long stockQuantity;
+    private int stockQuantity;
     private String image_path;
 
     public static ProductDetailDto fromEntity(Product p) {

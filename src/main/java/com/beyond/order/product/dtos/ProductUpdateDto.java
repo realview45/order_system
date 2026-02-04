@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductCreateDto {
+public class ProductUpdateDto {
     @NotBlank
     private String name;
     @NotBlank
@@ -21,7 +21,8 @@ public class ProductCreateDto {
     private String category;
     @NotBlank
     private int stockQuantity;
-    private MultipartFile productImage;
+//    이미지 수정은 일반적으로 별도의 api로 처리
+    private MultipartFile productImage;//s3와 통신시 성능이 떨어지 이미지업로드는 높은확률로 api가 따로있다.
 
     public Product toEntity(Member member) {
         return Product.builder()

@@ -1,5 +1,6 @@
 package com.beyond.order.ordering.service;
 
+import com.beyond.order.common.service.RabbitMqStockService;
 import com.beyond.order.common.service.SseAlarmService;
 import com.beyond.order.member.domain.Member;
 import com.beyond.order.member.repository.MemberRepository;
@@ -13,10 +14,13 @@ import com.beyond.order.ordering.dtos.OrderingDetailsListDto;
 import com.beyond.order.product.domain.Product;
 import com.beyond.order.product.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +34,21 @@ public class OrderingService {
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
     private final SseAlarmService sseAlarmService;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final RabbitMqStockService rabbitMqStockService;
+
     @Autowired
-    public OrderingService(OrderingRepository orderingRepository, OrderingDetailsRepository orderingDetailsRepository, ProductRepository productRepository, MemberRepository memberRepository, SseAlarmService sseAlarmService) {
+    public OrderingService(OrderingRepository orderingRepository, OrderingDetailsRepository orderingDetailsRepository, ProductRepository productRepository, MemberRepository memberRepository, SseAlarmService sseAlarmService, @Qualifier("stockInventory") RedisTemplate<String, String> redisTemplate, RabbitMqStockService rabbitMqStockService) {
         this.orderingRepository = orderingRepository;
         this.orderingDetailsRepository = orderingDetailsRepository;
         this.productRepository = productRepository;
         this.memberRepository = memberRepository;
         this.sseAlarmService = sseAlarmService;
+        this.redisTemplate = redisTemplate;
+        this.rabbitMqStockService = rabbitMqStockService;
     }
 
+//    @Transactional(isolation = Isolation.SERIALIZABLE)
     public Long create(List<OrderingCreateDto> dtoList) {
         //email을 인증객체에서 꺼내서 오더링 빌더로 만들고, 저장,
         String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
@@ -46,19 +56,34 @@ public class OrderingService {
         Ordering ordering = OrderingCreateDto.toEntity(member);
         List<OrderingDetails> orderList = ordering.getOrderList();
         for (OrderingCreateDto dto : dtoList) {
+//            //동시성제어방법2. select for update를 통한 락설정이후 조회 그럼에도 성능저하 에러날수있다.
             Product product = productRepository.findById(dto.getProductId()).orElseThrow(()->new EntityNotFoundException("엔티티가없습니다."));
-            if(product.getStockQuantity()<dto.getProductCount()){//요청전부다 취소될것임구리
-                throw new IllegalArgumentException("재고가 없습니다.");
+//            동시성제어방법3. redis에서 재고수량 확인 및 재고수량 감소처리
+//            단점 : 조회와 감소요청이 분리되다보니, 동시성문제 발생 -> 해결책 레디스에서 제공하는 루아 스크립트를 통해 여러요청을 단일 요청으로 코드를 묶어 해결
+                                                                //redis에 if else문을 날리는 것
+            String remain = redisTemplate.opsForValue().get(String.valueOf(dto.getProductId()));
+            int remainQuantity = Integer.parseInt(remain);
+            if(remainQuantity < dto.getProductCount()){
+                throw new IllegalArgumentException("재고가 부족합니다.");
+            }else {
+                redisTemplate.opsForValue().decrement(String.valueOf(dto.getProductId()), dto.getProductCount());
             }
+            //            if(product.getStockQuantity()<dto.getProductCount()){//요청전부다 취소될것임구리
+//                throw new IllegalArgumentException("재고가 없습니다.");
+//            }
             System.out.println("상품ID: " + dto.getProductId());
             System.out.println("수량: " + dto.getProductCount());
-            product.updateStockQuantity(dto.getProductCount());
+//            product.updateStockQuantity(dto.getProductCount());동시성문제
             OrderingDetails od =
                     OrderingDetails.builder()
-                            .product(productRepository.findById(dto.getProductId()).orElseThrow(()->new EntityNotFoundException("엔티티를 찾을 수 없습니다.")))
+                            .product(product)
                             .quantity(dto.getProductCount())
                             .ordering(ordering).build();
             orderList.add(od);//cascade persist
+//            rdb 동기화를 위한작업 : 스케줄러 이용
+
+//            rdb 동기화를 위한작업 : rabbitmq에 rdb 재고감소메시지발행
+            rabbitMqStockService.publish(dto.getProductId(),dto.getProductCount());
         }
         orderingRepository.save(ordering);
 //        주문성공시 admin 유저에게 알림메시지 전송

@@ -2,6 +2,8 @@ package com.beyond.order.product.domain;
 
 import com.beyond.order.common.domain.BaseTimeEntity;
 import com.beyond.order.member.domain.Member;
+import com.beyond.order.product.dtos.ProductDetailDto;
+import com.beyond.order.product.dtos.ProductUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,7 +27,7 @@ public class Product extends BaseTimeEntity {
     private Long price;
     private String category;
     @Column(nullable=false)
-    private Long stockQuantity;
+    private int stockQuantity;
     private String imagePath;
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT), nullable = false)
@@ -34,7 +36,14 @@ public class Product extends BaseTimeEntity {
     public void updateProfileImageUrl(String imgUrl) {
         imagePath = imgUrl;
     }
-    public void updateStockQuantity(Long orderQuantity) {
+    public void updateStockQuantity(int orderQuantity) {
         this.stockQuantity = this.stockQuantity-orderQuantity;
+    }
+
+    public void updateProduct(ProductUpdateDto dto) {
+        this.name=dto.getName();
+        this.category=dto.getCategory();
+        this.price=dto.getPrice();
+        this.stockQuantity = dto.getStockQuantity();
     }
 }

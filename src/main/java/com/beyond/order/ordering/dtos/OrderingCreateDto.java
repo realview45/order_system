@@ -19,7 +19,7 @@ public class OrderingCreateDto {
     @NotBlank
     private Long productId;
     @NotBlank
-    private Long productCount;
+    private int productCount;
     public static Ordering toEntity(Member member) {
         return Ordering.builder()
                 .orderStatus(OrderStatus.ordered)

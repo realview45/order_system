@@ -15,7 +15,7 @@ public class ProductListDto {
     private String name;
     private Long price;
     private String category;
-    private Long stockQuantity;
+    private int stockQuantity;
     private String image_path;
 
     public static ProductListDto fromEntity(Product p) {
