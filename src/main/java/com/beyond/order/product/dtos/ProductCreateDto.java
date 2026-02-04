@@ -20,7 +20,7 @@ public class ProductCreateDto {
     private Long price;
     private String category;
     @NotBlank
-    private Long stockQuantity;
+    private int stockQuantity;
     private MultipartFile productImage;
 
     public Product toEntity(Member member) {

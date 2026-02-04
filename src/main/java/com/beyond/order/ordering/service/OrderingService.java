@@ -1,5 +1,6 @@
 package com.beyond.order.ordering.service;
 
+import com.beyond.order.common.service.RabbitMqStockService;
 import com.beyond.order.common.service.SseAlarmService;
 import com.beyond.order.member.domain.Member;
 import com.beyond.order.member.repository.MemberRepository;
@@ -34,14 +35,17 @@ public class OrderingService {
     private final MemberRepository memberRepository;
     private final SseAlarmService sseAlarmService;
     private final RedisTemplate<String, String> redisTemplate;
+    private final RabbitMqStockService rabbitMqStockService;
+
     @Autowired
-    public OrderingService(OrderingRepository orderingRepository, OrderingDetailsRepository orderingDetailsRepository, ProductRepository productRepository, MemberRepository memberRepository, SseAlarmService sseAlarmService, @Qualifier("stockInventory") RedisTemplate<String, String> redisTemplate) {
+    public OrderingService(OrderingRepository orderingRepository, OrderingDetailsRepository orderingDetailsRepository, ProductRepository productRepository, MemberRepository memberRepository, SseAlarmService sseAlarmService, @Qualifier("stockInventory") RedisTemplate<String, String> redisTemplate, RabbitMqStockService rabbitMqStockService) {
         this.orderingRepository = orderingRepository;
         this.orderingDetailsRepository = orderingDetailsRepository;
         this.productRepository = productRepository;
         this.memberRepository = memberRepository;
         this.sseAlarmService = sseAlarmService;
         this.redisTemplate = redisTemplate;
+        this.rabbitMqStockService = rabbitMqStockService;
     }
 
 //    @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -76,6 +80,10 @@ public class OrderingService {
                             .quantity(dto.getProductCount())
                             .ordering(ordering).build();
             orderList.add(od);//cascade persist
+//            rdb 동기화를 위한작업 : 스케줄러 이용
+
+//            rdb 동기화를 위한작업 : rabbitmq에 rdb 재고감소메시지발행
+            rabbitMqStockService.publish(dto.getProductId(),dto.getProductCount());
         }
         orderingRepository.save(ordering);
 //        주문성공시 admin 유저에게 알림메시지 전송

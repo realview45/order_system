@@ -25,7 +25,7 @@ public class Product extends BaseTimeEntity {
     private Long price;
     private String category;
     @Column(nullable=false)
-    private Long stockQuantity;
+    private int stockQuantity;
     private String imagePath;
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT), nullable = false)
@@ -34,7 +34,7 @@ public class Product extends BaseTimeEntity {
     public void updateProfileImageUrl(String imgUrl) {
         imagePath = imgUrl;
     }
-    public void updateStockQuantity(Long orderQuantity) {
+    public void updateStockQuantity(int orderQuantity) {
         this.stockQuantity = this.stockQuantity-orderQuantity;
     }
 }

@@ -17,7 +17,7 @@ public class OrderingDetails extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long quantity;
+    private int quantity;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ordering_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
     private Ordering ordering;

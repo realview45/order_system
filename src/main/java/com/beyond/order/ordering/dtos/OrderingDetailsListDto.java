@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class OrderingDetailsListDto {
     private Long detailId;
     private String productName;
-    private Long productCount;
+    private Integer productCount;
     public static OrderingDetailsListDto fromEntity(OrderingDetails orderingDetails){
         return OrderingDetailsListDto.builder().detailId(orderingDetails.getId())
                 .productName(orderingDetails.getProduct().getName())
